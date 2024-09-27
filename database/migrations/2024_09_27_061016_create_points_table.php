@@ -11,9 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('categories', function (Blueprint $table) {
+        Schema::create('points', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
+            $table->foreignId('user_id')->references('id')->on('users');
+            $table->integer('points');
             $table->timestamps();
         });
     }
@@ -23,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('categories');
+        Schema::dropIfExists('points');
     }
 };

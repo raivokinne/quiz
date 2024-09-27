@@ -6,7 +6,6 @@ use App\Models\Question;
 use App\Models\User;
 use App\Models\Category;
 use App\Models\Answer;
-// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 
@@ -22,6 +21,13 @@ class DatabaseSeeder extends Seeder
             'email' => 'admin@gmail.com',
             'password' => Hash::make('admin123'),
             'role' => 'admin'
+        ]);
+
+        User::factory()->create([
+            'name' => 'User',
+            'email' => 'user@gmail.com',
+            'password' => Hash::make('user123'),
+            'role' => 'user'
         ]);
 
         $categories = [

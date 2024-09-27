@@ -26,8 +26,7 @@
                                     <div>
                                         <p class="mt-1.5 text-sm font-medium text-white">Choose a topic: </p>
 
-                                        <form method="POST" action="/choose-quiz">
-                                            @csrf
+                                        <form method="get" action="{{ route('quiz.start', 1) }}">
                                             <div class="mt-4">
                                                 <select name="quiz_topic"
                                                     class="w-full p-2 rounded border border-white bg-gray-800 text-white">

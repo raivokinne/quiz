@@ -9,6 +9,10 @@ use App\Http\Middleware\AdminMiddleware;
 Route::group(['middleware' => 'auth'], function () {
     Route::get('/welcome', [PageController::class, 'index'])->middleware('auth')->name('welcome');
     Route::get('/quiz', [QuizController::class, 'index'])->name('quiz.index');
+    Route::get('/quiz/start', [QuizController::class, 'start'])->name('quiz.start');
+    Route::get('/quiz/question', [QuizController::class, 'showQuestion'])->name('quiz.question');
+    Route::post('/quiz/submit', [QuizController::class, 'submit'])->name('quiz.submit');
+    Route::get('/quiz/result', [QuizController::class, 'result'])->name('quiz.result');
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 });
 
