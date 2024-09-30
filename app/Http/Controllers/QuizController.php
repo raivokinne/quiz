@@ -6,8 +6,8 @@ use Illuminate\Http\Request;
 use App\Models\Question;
 use App\Models\Answer;
 use App\Models\Point;
+use App\Models\Hystory;
 use Illuminate\Support\Facades\Session;
-use Illuminate\Support\Facades\Log;
 
 class QuizController extends Controller
 {
@@ -76,9 +76,15 @@ class QuizController extends Controller
         }
 
         if (auth()->check()) {
-            Point::create([
+            $point = Point::create([
                 'user_id' => auth()->user()->id,
                 'points' => Session::get('quiz_score', 0)
+            ]);
+
+            Hystory::create([
+                'user_id' => auth()->user()->id,
+                'point_id' => $point->id,
+                'category_id' => $question->category_id
             ]);
         }
 
@@ -90,13 +96,8 @@ class QuizController extends Controller
         $score = Session::get('quiz_score', 0);
         $totalQuestions = count(Session::get('quiz_questions', []));
 
-        Log::info('Final Score: ' . $score);
-        Log::info('Total Questions: ' . $totalQuestions);
-
-        // Clear the session data
         Session::forget(['quiz_questions', 'current_question_index', 'quiz_score']);
 
         return view('quiz.result', compact('score', 'totalQuestions'));
     }
 }
-

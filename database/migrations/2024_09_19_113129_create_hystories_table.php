@@ -16,9 +16,12 @@ return new class extends Migration
             $table->foreignId('user_id')
                 ->references('id')
                 ->on('users');
-            $table->foreignId('question_id')
+            $table->foreignId('category_id')
                 ->references('id')
-                ->on('questions');
+                ->on('categories');
+            $table->foreignId('point_id')
+                ->references('id')
+                ->on('points');
             $table->timestamps();
         });
     }
