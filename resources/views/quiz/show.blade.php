@@ -1,19 +1,39 @@
 <x-app-layout>
-    <div class="container w-full flex justify-center items-center mt-8">
-        <form action="{{ route('quiz.submit') }}" method="POST">
-            @csrf
-            <div class="mb-6">
-                <h2 class="text-2xl font-bold mb-2">Question {{ Session::get('current_question_index') + 1 }}</h2>
-                <p class="text-lg">{{ $question->question }}</p>
-            </div>
-            @foreach ($answers as $answer)
-                <div class="mb-4 flex items-center gap-2">
-                    <input type="radio" id="answer_{{ $answer->id }}" name="answer" value="{{ $answer->answer }}"
-                        class="form-radio h-5 w-5 text-blue-600" required>
-                    <label for="answer_{{ $answer->id }}" class="ml-2 text-white">{{ $answer->answer }}</label>
+    <div class="container mx-auto max-w-3xl mt-12 px-4">
+        <div class="flex items-center justify-center gap-6 mb-12">
+            @foreach ($questionResults as $index => $result)
+                <div
+                    class="w-6 h-6 rounded-full
+                    {{ $index < $currentIndex ? ($result['is_correct'] ? 'bg-green-500' : 'bg-red-500') : 'bg-gray-200' }}">
                 </div>
             @endforeach
-            <button type="submit" class="mt-4 bg-black border-2 border-white text-white font-bold py-2 px-4 rounded">
+        </div>
+
+        <form action="{{ route('quiz.submit') }}" method="POST">
+            @csrf
+            <div class="mb-10 w-full text-center">
+                <h2 class="text-4xl font-bold mb-4">Question {{ $currentIndex + 1 }}</h2>
+                <p class="text-2xl">{{ $question->question }}</p>
+            </div>
+
+            <div class="w-full grid grid-cols-2 gap-6">
+                @foreach ($answers as $answer)
+                    <div class="relative">
+                        <input type="radio" id="answer_{{ $answer->id }}" name="answer" value="{{ $answer->id }}"
+                            class="peer sr-only" required>
+                        <label for="answer_{{ $answer->id }}"
+                            class="block w-full h-full p-6 bg-black border-4 border-white rounded-lg cursor-pointer
+                                      transition-all duration-200 ease-in-out
+                                      peer-checked:bg-orange-400 peer-checked:border-white hover:bg-gray-800">
+                            <span class="text-xl text-white">{{ $answer->answer }}</span>
+                        </label>
+                    </div>
+                @endforeach
+            </div>
+
+            <button type="submit"
+                class="mt-10 w-full bg-black border-4 border-white text-white text-2xl font-bold py-4 px-6
+                           rounded-lg hover:bg-orange-400 transition-colors duration-200">
                 Submit Answer
             </button>
         </form>

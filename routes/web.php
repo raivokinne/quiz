@@ -12,7 +12,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/quiz/start', [QuizController::class, 'start'])->name('quiz.start');
     Route::get('/quiz/question', [QuizController::class, 'showQuestion'])->name('quiz.question');
     Route::post('/quiz/submit', [QuizController::class, 'submit'])->name('quiz.submit');
-    Route::get('/quiz/result', [QuizController::class, 'result'])->name('quiz.result');
+    Route::get('/quiz/result/{id}', [QuizController::class, 'result'])->name('quiz.result');
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 });
 

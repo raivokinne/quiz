@@ -5,8 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Question;
 use App\Models\Answer;
-use App\Models\Point;
-use App\Models\Hystory;
+use App\Models\Result;
 use Illuminate\Support\Facades\Session;
 
 class QuizController extends Controller
@@ -22,16 +21,14 @@ class QuizController extends Controller
         if (!$topicId) {
             return redirect()->back()->with('error', 'Quiz topic not specified.');
         }
-
         $questions = Question::where('category_id', $topicId)->pluck('id')->toArray();
         if (empty($questions)) {
             return redirect()->back()->with('error', 'No questions found for this topic.');
         }
-
         Session::put('quiz_questions', $questions);
         Session::put('current_question_index', 0);
         Session::put('quiz_score', 0);
-
+        Session::put('question_results', []);
         return redirect()->route('quiz.question');
     }
 
@@ -39,15 +36,18 @@ class QuizController extends Controller
     {
         $questions = Session::get('quiz_questions');
         $currentIndex = Session::get('current_question_index');
-
         if (!isset($questions[$currentIndex])) {
             return redirect()->route('quiz.result');
         }
-
+        $totalQuestions = count($questions);
+        $score = Session::get('quiz_score', 0);
         $question = Question::findOrFail($questions[$currentIndex]);
         $answers = Answer::where('question_id', $question->id)->inRandomOrder()->get();
-
-        return view('quiz.show', compact('question', 'answers'));
+        $correctAnswer = Answer::where('question_id', $question->id)
+            ->where('is_correct', true)
+            ->first();
+        $questionResults = Session::get('question_results', []);
+        return view('quiz.show', compact('correctAnswer', 'question', 'score', 'answers', 'totalQuestions', 'questionResults', 'currentIndex'));
     }
 
     public function submit(Request $request)
@@ -59,13 +59,23 @@ class QuizController extends Controller
         $questions = Session::get('quiz_questions');
         $currentIndex = Session::get('current_question_index');
         $question = Question::findOrFail($questions[$currentIndex]);
-
-        $selectedAnswer = $request->get('answer');
+        $selectedAnswer = Answer::findOrFail($request->get('answer'));
         $correctAnswer = Answer::where('question_id', $question->id)
             ->where('is_correct', true)
             ->first();
 
-        if ($correctAnswer && $correctAnswer->answer == $selectedAnswer) {
+        $isCorrect = $correctAnswer->id == $selectedAnswer->id;
+
+        $questionResults = Session::get('question_results', []);
+        $questionResults[] = [
+            'question' => $question->question,
+            'selected_answer' => $selectedAnswer->answer,
+            'correct_answer' => $correctAnswer->answer,
+            'is_correct' => $isCorrect
+        ];
+        Session::put('question_results', $questionResults);
+
+        if ($isCorrect) {
             Session::increment('quiz_score');
         }
 
@@ -75,29 +85,24 @@ class QuizController extends Controller
             return redirect()->route('quiz.question');
         }
 
-        if (auth()->check()) {
-            $point = Point::create([
-                'user_id' => auth()->user()->id,
-                'points' => Session::get('quiz_score', 0)
-            ]);
+        $quizResult = Result::create([
+            'user_id' => auth()->id(),
+            'score' => Session::get('quiz_score', 0),
+            'total_questions' => count($questions),
+            'results' => $questionResults
+        ]);
 
-            Hystory::create([
-                'user_id' => auth()->user()->id,
-                'point_id' => $point->id,
-                'category_id' => $question->category_id
-            ]);
-        }
-
-        return redirect()->route('quiz.result');
+        return redirect()->route('quiz.result', ['id' => $quizResult->id]);
     }
 
-    public function result()
+    public function result($id)
     {
-        $score = Session::get('quiz_score', 0);
-        $totalQuestions = count(Session::get('quiz_questions', []));
+        $quizResult = Result::findOrFail($id);
 
-        Session::forget(['quiz_questions', 'current_question_index', 'quiz_score']);
+        $score = $quizResult->score;
+        $totalQuestions = $quizResult->total_questions;
+        $questionResults = $quizResult->results;
 
-        return view('quiz.result', compact('score', 'totalQuestions'));
+        return view('quiz.result', compact('score', 'totalQuestions', 'questionResults'));
     }
 }
