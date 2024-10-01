@@ -12,4 +12,11 @@ class PageController extends Controller
 
         return view('welcome', ['topics' => $topics]);
     }
+
+    public function dashboard()
+    {
+        $topics = Category::all();
+
+        return view('dashboard', ['topics' => $topics]);
+    }
 }

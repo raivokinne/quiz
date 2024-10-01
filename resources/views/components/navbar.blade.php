@@ -5,6 +5,11 @@
             @auth
                 @if (Auth::user()->role == 'admin')
                     <a href="{{ route('dashboard') }}" class="text-white hover:text-gray-300">Dashboard</a>
+                @else
+                    <form action="{{ route('logout') }}" method="POST">
+                        @csrf
+                        <button type="submit" class="text-white hover:text-gray-300">Logout</button>
+                    </form>
                 @endif
             @endauth
         </div>
