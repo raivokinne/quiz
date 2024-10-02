@@ -30,5 +30,6 @@ Route::group(['middleware' => AdminMiddleware::class], function () {
     Route::get('/quiz/edit/{quizId}', [QuizController::class, 'edit'])->name('quiz.edit');
     Route::post('/quiz/edit/{quizId}/update', [QuizController::class, 'update'])->name('quiz.update');
     Route::post('/quiz/{quizId}/delete', [QuizController::class, 'delete'])->name('quiz.delete');
+    Route::get('/quiz/choose', [QuizController::class, 'chooseQuiz'])->name('quiz.choose');
     Route::get('/dashboard', [PageController::class, 'dashboard'])->name('dashboard');
 });

@@ -61,7 +61,7 @@ class QuizController extends Controller
     {
         $category = Category::find($quizID);
         if (!$category) {
-            return redirect('/quiz/index')->with('error', 'Quiz not found.');
+            return redirect('/dashboard')->with('error', 'Quiz not found.');
         }
 
         $questions = Question::where('category_id', $quizID)->get();
@@ -95,7 +95,7 @@ class QuizController extends Controller
 
         $category = Category::find($quizID);
         if (!$category) {
-            return redirect('/quiz/index')->with('error', 'Quiz not found.');
+            return redirect('/quiz/edit')->with('error', 'Quiz not found.');
         }
         $category->name = $request->category;
         $category->save();
@@ -117,7 +117,7 @@ class QuizController extends Controller
             }
         }
 
-        return redirect('/quiz/edit/' . $quizID)->with('success', 'Quiz updated successfully!');
+        return redirect('/dashboard')->with('success', 'Quiz updated successfully!');
     }
 
     public function delete($quizID)
