@@ -24,6 +24,10 @@ Route::group(['middleware' => 'guest'], function () {
     Route::post('/register', [AuthController::class, 'register']);
 });
 
+
+Route::get('/leaderboard', [PageController::class, 'leaderboard'])->name('leaderboard');
+Route::get('/leaderboard/show', [PageController::class, 'show'])->name('leaderboard.show');
+
 Route::group(['middleware' => AdminMiddleware::class], function () {
     Route::get('/quiz/create', [QuizController::class, 'create'])->name('quiz.create');
     Route::post('/quiz/create/store', [QuizController::class, 'store'])->name('quiz.store');

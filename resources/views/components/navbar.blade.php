@@ -5,6 +5,8 @@
             @auth
                 @if (Auth::user()->role == 'admin')
                     <a href="{{ route('dashboard') }}" class="text-white hover:text-gray-300">Dashboard</a>
+                @else (Auth::user()->role == 'user')
+                    <a href="{{ route('leaderboard') }}" class="text-white hover:text-gray-300">Leaderboard</a>
                 @endif
             @endauth
         </div>
